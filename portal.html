@@ -1322,6 +1322,23 @@ function submitReimb() {
   document.getElementById('reimb-receipt').value = '';
   renderReimb();
   showToast('✅ Reimbursement submitted!');
+
+  // Sync to Google Sheets
+  fetch('https://veronica-64364898.base44.app/functions/sheetsSync', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      type: 'reimbursement',
+      data: {
+        filedBy: currentUser.name,
+        category: cat,
+        amount: parseFloat(amount),
+        dateOfExpense: date,
+        description: desc,
+        receiptLink: receipt
+      }
+    })
+  }).catch(e => console.warn('Sheets sync failed:', e));
 }
 
 function approveReimb(idx) {
