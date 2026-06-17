@@ -163,7 +163,7 @@
     .form-card input, .form-card select, .form-card textarea { padding:10px 12px; font-size:14px; border-radius:8px; }
     .btn-submit { width:100%; background:var(--teal); color:#000; border:none; border-radius:8px; padding:12px; font-size:14px; font-weight:700; font-family:'Inter',sans-serif; cursor:pointer; margin-top:4px; transition:background 0.2s; }
     .btn-submit:hover { background:var(--teal-dim); }
-    .reimb-table { width:100%; border-collapse:collapse; }
+    .reimb-table { width:100%; display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; border-collapse:collapse; }
     .reimb-table th { text-align:left; font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--grey); padding:0 12px 14px; border-bottom:1px solid rgba(255,255,255,0.06); }
     .reimb-table td { padding:14px 12px; font-size:13px; color:var(--light); border-bottom:1px solid rgba(255,255,255,0.04); vertical-align:middle; }
     .status-pill { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; }
@@ -354,7 +354,119 @@
         grid-template-columns: 1fr;
       }
     }
-  </style>
+  
+    /* ===== MOBILE: SECTION-SPECIFIC FIXES ===== */
+    @media (max-width: 768px) {
+
+      /* --- CALENDAR --- */
+      .calendar-wrap {
+        padding: 14px;
+      }
+      .cal-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      .cal-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        width: 100%;
+      }
+      .cal-nav button {
+        flex: 1;
+        min-width: 60px;
+        font-size: 12px;
+        padding: 7px 8px;
+      }
+      .cal-grid-header,
+      .cal-grid {
+        grid-template-columns: repeat(7, 1fr);
+        gap: 2px;
+      }
+      .cal-day-name {
+        font-size: 9px;
+        padding: 4px 0;
+        letter-spacing: 0;
+      }
+      .cal-cell {
+        min-height: 50px;
+        padding: 4px;
+        font-size: 11px;
+      }
+      .cal-cell .ev-dot {
+        font-size: 10px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+      }
+
+      /* --- CONTENT CALENDAR --- */
+      .content-grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      /* --- REIMBURSEMENTS --- */
+      .reimb-grid {
+        grid-template-columns: 1fr;
+      }
+
+      /* --- DOCUMENTS --- */
+      .doc-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .doc-card {
+        padding: 14px;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      /* --- FINANCES --- */
+      .finance-kpis {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .kpi-card {
+        padding: 14px;
+      }
+      .finance-tables {
+        grid-template-columns: 1fr !important;
+      }
+      .fin-table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* --- GENERAL TABLE SCROLL --- */
+      .table-wrap, .reimb-history, .fin-table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 10px;
+      }
+      table, .data-table {
+        min-width: 480px;
+      }
+
+      /* --- SECTION HEADERS --- */
+      .section-header h1 {
+        font-size: 20px;
+      }
+      .section-header p {
+        font-size: 13px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .doc-grid {
+        grid-template-columns: 1fr;
+      }
+      .finance-kpis {
+        grid-template-columns: 1fr;
+      }
+    }
+</style>
 </head>
 <body>
 
@@ -610,7 +722,7 @@
       </div>
       <div class="panel">
         <div class="panel-header"><div class="panel-title">Recent Invoices</div><button class="btn-action" style="font-size:12px;padding:7px 14px;">+ New Invoice</button></div>
-        <table class="reimb-table">
+        <div class="fin-table-wrap"><table class="reimb-table">
           <thead><tr><th>Invoice #</th><th>Client</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead>
           <tbody>
             <tr><td>0003</td><td>The Rec Room</td><td>₱50,000</td><td>Jun 2026</td><td><span class="status-pill status-pending">Pending</span></td></tr>
