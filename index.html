@@ -13,7 +13,7 @@
       font-family: 'Inter', sans-serif;
       background: #080808;
       color: #e8e8e8;
-      overflow: hidden;
+      overflow-x: hidden;
     }
 
     body {
@@ -113,6 +113,28 @@
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
       pointer-events: none;
       opacity: 0.4;
+    }
+
+    @media (max-width: 768px) {
+      .logo {
+        width: 120px;
+      }
+
+      .building {
+        font-size: 11px;
+        letter-spacing: 4px;
+      }
+
+      .portal-link {
+        bottom: 24px;
+        right: 20px;
+        font-size: 13px;
+        background: rgba(0,0,0,0.6);
+        padding: 10px 14px;
+        border-radius: 20px;
+        border: 1px solid rgba(0,201,167,0.2);
+        color: #888;
+      }
     }
   </style>
 </head>
