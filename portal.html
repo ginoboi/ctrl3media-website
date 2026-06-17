@@ -220,6 +220,140 @@
 
     /* GCal badge */
     .gcal-badge { font-size:10px; background:rgba(66,133,244,0.15); color:#7baaf7; border:1px solid rgba(66,133,244,0.25); border-radius:4px; padding:2px 6px; margin-left:6px; }
+
+    /* ===== MOBILE HAMBURGER BUTTON ===== */
+    .hamburger {
+      display: none;
+      position: fixed;
+      top: 14px;
+      left: 16px;
+      z-index: 200;
+      background: var(--dark3);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      width: 40px;
+      height: 40px;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      color: var(--light);
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 49;
+    }
+
+    /* ===== RESPONSIVE BREAKPOINTS ===== */
+    @media (max-width: 768px) {
+      .hamburger { display: flex; }
+
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        z-index: 100;
+        width: 260px;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay.open {
+        display: block;
+      }
+
+      .main-content {
+        margin-left: 0 !important;
+      }
+
+      .topbar {
+        padding: 0 16px 0 64px;
+      }
+
+      .topbar-title {
+        font-size: 15px;
+      }
+
+      .topbar-date {
+        display: none;
+      }
+
+      .page {
+        padding: 16px;
+      }
+
+      .cards-row {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+
+      .welcome-banner {
+        flex-direction: column;
+        gap: 16px;
+        padding: 20px;
+      }
+
+      .welcome-text h2 {
+        font-size: 18px;
+      }
+
+      .welcome-badge {
+        width: 100%;
+        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .stat-card {
+        padding: 16px;
+      }
+
+      .stat-card .stat-val {
+        font-size: 22px;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .data-table {
+        min-width: 500px;
+      }
+
+      .modal-box {
+        padding: 24px 18px;
+        width: 95%;
+        max-height: 85vh;
+      }
+
+      .login-box {
+        padding: 32px 24px;
+        margin: 16px;
+      }
+
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .cards-row {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -251,6 +385,11 @@
 
 <!-- APP SHELL -->
 <div id="app-shell">
+
+  <!-- Mobile Nav -->
+  <button class="hamburger" id="hamburger" onclick="toggleSidebar()">&#9776;</button>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
   <aside class="sidebar">
     <div class="sidebar-header">
       <img src="https://base44.app/api/apps/6a089110f76438ad64364898/files/mp/public/6a089110f76438ad64364898/bca8e8584_61cdb9598_Ctrl3final_transparent.png" alt="CTRL 3" />
@@ -1156,6 +1295,22 @@ function showToast(msg) {
   t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'), 3200);
 }
+
+  function toggleSidebar() {
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('open');
+  }
+  function closeSidebar() {
+    document.querySelector('.sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+  }
+  // Close sidebar on nav item click (mobile)
+  document.querySelectorAll('.nav-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      if (window.innerWidth <= 768) closeSidebar();
+    });
+  });
+
 </script>
 </body>
 </html>
