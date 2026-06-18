@@ -44,8 +44,8 @@
     }
 
     .logo {
-      width: 480px;
-      max-width: 85vw;
+      width: 420px;
+      max-width: 80vw;
       opacity: 0;
       animation: fadeUp 1s ease 0.3s forwards;
       mix-blend-mode: screen;
@@ -120,7 +120,7 @@
 
     @media (max-width: 768px) {
       .logo {
-        width: 120px;
+        width: 75vw;
       }
 
       .building {
@@ -129,14 +129,19 @@
       }
 
       .portal-link {
-        bottom: 24px;
-        right: 20px;
-        font-size: 13px;
+        bottom: 20px;
+        right: 16px;
+        font-size: 12px;
         background: rgba(0,0,0,0.6);
-        padding: 10px 14px;
+        padding: 8px 14px;
         border-radius: 20px;
         border: 1px solid rgba(0,201,167,0.2);
         color: #888;
+      }
+
+      .brands {
+        bottom: 68px;
+        gap: 20px;
       }
     }
   
@@ -169,9 +174,17 @@
     }
 
     .brand-logo {
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
       object-fit: contain;
+      border-radius: 50%;
+    }
+
+    .brand-logo.recroom {
+      mix-blend-mode: screen;
+    }
+
+    .brand-logo.conmen {
       mix-blend-mode: screen;
     }
 
@@ -201,15 +214,16 @@
       alt="CTRL 3 Media Inc."
     />
     <div class="building">Building</div>
+  </div>
 
   <div class="brands">
     <a class="brand-link" href="https://www.instagram.com/recroom.ph?igsh=dmx3azlmcXBlcjBk" target="_blank" rel="noopener">
-      <img class="brand-logo" src="https://base44.app/api/apps/6a089110f76438ad64364898/files/mp/public/6a089110f76438ad64364898/c98bba305_file_114.jpg" alt="Rec Room PH" />
+      <img class="brand-logo recroom" src="https://base44.app/api/apps/6a089110f76438ad64364898/files/mp/public/6a089110f76438ad64364898/c98bba305_file_114.jpg" alt="Rec Room PH" />
       <span class="brand-name">Rec Room</span>
     </a>
     <div class="brand-divider"></div>
     <a class="brand-link" href="https://www.instagram.com/conmenph?igsh=eXh3aDBxenllZXZw" target="_blank" rel="noopener">
-      <img class="brand-logo" src="https://base44.app/api/apps/6a089110f76438ad64364898/files/mp/public/6a089110f76438ad64364898/ed86656bf_file_113.jpg" alt="ConMen" />
+      <img class="brand-logo conmen" src="https://base44.app/api/apps/6a089110f76438ad64364898/files/mp/public/6a089110f76438ad64364898/ed86656bf_file_113.jpg" alt="ConMen" />
       <span class="brand-name">ConMen</span>
     </a>
   </div>
