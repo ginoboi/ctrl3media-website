@@ -1547,16 +1547,16 @@ function renderAnnouncements(targetId) {
     const deleteBtn = isAdmin
       ? `<button onclick="deleteAnn('${ann.id}')" style="background:none;border:none;color:var(--grey);cursor:pointer;font-size:11px;margin-left:8px;opacity:0.5;" title="Delete">✕</button>`
       : '';
-    return \`<div class="announcement-item" id="ann-item-\${ann.id}">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div class="ann-title">\${ann.title}\${deleteBtn}</div>
-        \${isNew ? '<span class=\"tag tag-teal\">New</span>' : ''}
-      </div>
-      <div class="ann-meta">Posted by \${ann.poster} · \${ann.date}</div>
-      <div class="ann-body">\${ann.body}</div>
-      \${readBtn}
-      \${readerList}
-    </div>\`;
+    const newBadge2 = isNew ? '<span class="tag tag-teal">New</span>' : '';
+    return '<div class="announcement-item" id="ann-item-' + ann.id + '">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+        '<div class="ann-title">' + ann.title + deleteBtn + '</div>' +
+        newBadge2 +
+      '</div>' +
+      '<div class=\"ann-meta\">Posted by ' + ann.poster + ' · ' + ann.date + '</div>' +
+      '<div class=\"ann-body\">' + ann.body + '</div>' +
+      readBtn + readerList +
+    '</div>';
   }).join('');
 
   // Update dash unread count
@@ -1596,14 +1596,16 @@ function renderDashAnnouncements() {
 
   c.innerHTML = db.map(ann => {
     const hasRead = ann.readers.includes(currentUser.email);
-    return \`<div class="announcement-item">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div class="ann-title">\${ann.title}</div>
-        \${!hasRead ? '<span class=\"tag tag-teal\">Unread</span>' : ''}
-      </div>
-      <div class="ann-meta">Posted by \${ann.poster} · \${ann.date}</div>
-      <div class="ann-body">\${ann.body.substring(0,120)}\${ann.body.length>120?'...':''}</div>
-    </div>\`;
+    const unreadBadge = !hasRead ? '<span class="tag tag-teal">Unread</span>' : '';
+    const bodySnip = ann.body.substring(0,120) + (ann.body.length>120?'...':'');
+    return '<div class="announcement-item">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+        '<div class="ann-title">' + ann.title + '</div>' +
+        unreadBadge +
+      '</div>' +
+      '<div class="ann-meta">Posted by ' + ann.poster + ' · ' + ann.date + '</div>' +
+      '<div class="ann-body">' + bodySnip + '</div>' +
+    '</div>';
   }).join('');
 }
 
