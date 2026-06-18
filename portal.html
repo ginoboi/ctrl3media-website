@@ -466,6 +466,24 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* ── FILE UPLOAD AREA ── */
+    .upload-area { border:1px dashed rgba(255,255,255,0.12); border-radius:10px; padding:18px; text-align:center; cursor:pointer; transition:border-color 0.2s; background:var(--dark4); }
+    .upload-area:hover { border-color:var(--teal); }
+    .upload-icon { font-size:22px; margin-bottom:6px; }
+    .upload-label { font-size:13px; color:var(--light); font-weight:500; margin-bottom:4px; }
+    .upload-hint { font-size:11px; color:var(--grey); }
+    .upload-preview { display:flex; align-items:center; margin-top:8px; padding:8px 12px; background:rgba(0,201,167,0.06); border-radius:8px; border:1px solid rgba(0,201,167,0.15); }
+    /* ── CALENDAR TABS ── */
+    .cal-tabs { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+    .cal-tab { background:var(--dark3); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:9px 18px; font-size:13px; font-weight:600; color:var(--grey2); cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.2s; }
+    .cal-tab:hover { border-color:rgba(0,201,167,0.3); color:var(--light); }
+    .cal-tab.active { background:rgba(0,201,167,0.1); border-color:var(--teal); color:var(--teal); }
+    /* ── ANNOUNCEMENT READ TRACKING ── */
+    .ann-read-btn { background:none; border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:4px 10px; font-size:11px; color:var(--grey2); cursor:pointer; transition:all 0.2s; margin-top:8px; }
+    .ann-read-btn:hover { border-color:var(--teal); color:var(--teal); }
+    .ann-read-badge { display:inline-flex; align-items:center; gap:4px; font-size:11px; color:var(--teal); margin-top:8px; }
+    .ann-readers { font-size:11px; color:var(--grey); margin-top:6px; }
 </style>
 </head>
 <body>
@@ -553,16 +571,14 @@
       </div>
       <div class="cards-row">
         <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-val" id="dash-tasks">—</div><div class="stat-lbl">Open Tasks</div></div>
-        <div class="stat-card"><div class="stat-icon">📢</div><div class="stat-val">3</div><div class="stat-lbl">Announcements</div></div>
+        <div class="stat-card" onclick="navigate('announcements',document.querySelector('[onclick*=announcements]'))" style="cursor:pointer;"><div class="stat-icon">📢</div><div class="stat-val" id="dash-ann-stat">—</div><div class="stat-lbl">Unread Announcements</div></div>
         <div class="stat-card"><div class="stat-icon">🧾</div><div class="stat-val" id="dash-reimb">1</div><div class="stat-lbl">Pending Reimbursements</div></div>
         <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-val" id="dash-events">3</div><div class="stat-lbl">Upcoming Events</div></div>
       </div>
       <div class="two-col">
         <div class="panel">
           <div class="panel-header"><div class="panel-title">📢 Latest Announcements</div></div>
-          <div class="announcement-item"><div class="ann-title">All-Hands Meeting — June 17</div><div class="ann-meta">Posted by Gino · June 17, 2026</div><div class="ann-body">First all-hands meeting for CTRL 3 and ConMen. All employees to attend.</div></div>
-          <div class="announcement-item"><div class="ann-title">BPI Account Requirement</div><div class="ann-meta">Posted by Kaila · June 15, 2026</div><div class="ann-body">All employees must open a BPI account for automated salary crediting by June 30.</div></div>
-          <div class="announcement-item"><div class="ann-title">Payroll Schedule Reminder</div><div class="ann-meta">Posted by Kaila · June 14, 2026</div><div class="ann-body">Salaries are credited every 15th and 30th. Cut-off is end of each period.</div></div>
+          <div id="dash-ann-container"></div>
         </div>
         <div class="panel">
           <div class="panel-header"><div class="panel-title">⚡ Quick Access</div></div>
@@ -580,16 +596,24 @@
     <div class="page" id="page-calendar">
       <div class="section-header">
         <h1>📅 Company Calendar</h1>
-        <p>All company events, shoots, and Rec Room bookings. Synced with Google Calendar.</p>
+        <p>Switch between the ConMen content calendar and Rec Room booking calendar.</p>
+      </div>
+      <!-- Calendar Tabs -->
+      <div class="cal-tabs" id="cal-tabs">
+        <button class="cal-tab active" id="cal-tab-content" onclick="switchCalTab('content')">🎬 Content Calendar</button>
+        <button class="cal-tab" id="cal-tab-booking" onclick="switchCalTab('booking')">🏠 Rec Room Bookings</button>
       </div>
       <div class="calendar-wrap">
         <div class="cal-header">
-          <div class="cal-title" id="cal-month-label">June 2026</div>
+          <div>
+            <div class="cal-title" id="cal-month-label">June 2026</div>
+            <div id="cal-tab-label" style="font-size:11px;color:var(--teal);letter-spacing:2px;text-transform:uppercase;margin-top:2px;">Content Calendar</div>
+          </div>
           <div class="cal-nav">
             <button onclick="changeMonth(-1)">← Prev</button>
             <button onclick="changeMonth(0)">Today</button>
             <button onclick="changeMonth(1)">Next →</button>
-            <button onclick="openAddEvent()" style="background:var(--teal);color:#000;border-color:var(--teal);font-weight:700;">+ Add Event</button>
+            <button onclick="openAddEvent()" style="background:var(--teal);color:#000;border-color:var(--teal);font-weight:700;">+ Add Entry</button>
           </div>
         </div>
         <div class="cal-grid-header">
@@ -612,21 +636,7 @@
         </div>
       </div>
       <div class="panel" id="announcements-list">
-        <div class="announcement-item">
-          <div style="display:flex;justify-content:space-between;align-items:center;"><div class="ann-title">All-Hands Meeting — June 17</div><span class="tag tag-teal">New</span></div>
-          <div class="ann-meta">Posted by Gino · June 17, 2026</div>
-          <div class="ann-body">First all-hands meeting for CTRL 3 and ConMen. All employees to attend. Agenda will be distributed beforehand.</div>
-        </div>
-        <div class="announcement-item">
-          <div class="ann-title">BPI Account Requirement</div>
-          <div class="ann-meta">Posted by Kaila · June 15, 2026</div>
-          <div class="ann-body">All employees must open a BPI account for automated salary crediting. Complete by June 30, 2026.</div>
-        </div>
-        <div class="announcement-item">
-          <div class="ann-title">Payroll Schedule — June 2026</div>
-          <div class="ann-meta">Posted by Kaila · June 14, 2026</div>
-          <div class="ann-body">Salaries are credited every 15th and 30th. File all leave requests with Kaila in advance.</div>
-        </div>
+        <div id="ann-items-container"></div>
       </div>
     </div>
 
@@ -644,6 +654,10 @@
         <button class="btn-action" style="font-size:12px;padding:7px 14px;" onclick="openAddTask()">+ Add Task</button>
       </div>
       <div id="tasks-container"></div>
+      <div id="tasks-save-bar" style="display:none;margin-top:20px;padding:14px 0;border-top:1px solid rgba(255,255,255,0.06);">
+        <button class="btn-action" onclick="saveTaskStatus()" style="background:var(--teal);color:#000;font-weight:700;">💾 Save Status</button>
+        <span style="font-size:12px;color:var(--grey);margin-left:12px;" id="tasks-unsaved-hint">You have unsaved changes</span>
+      </div>
     </div>
 
     <!-- CONTENT CALENDAR -->
@@ -673,7 +687,19 @@
           <div class="form-group"><label>Amount (₱)</label><input type="number" id="reimb-amount" placeholder="0.00" /></div>
           <div class="form-group"><label>Date of Expense</label><input type="date" id="reimb-date" /></div>
           <div class="form-group"><label>Description</label><textarea id="reimb-desc" placeholder="What was this for?"></textarea></div>
-          <div class="form-group"><label>Receipt (Google Drive link)</label><input type="text" id="reimb-receipt" placeholder="https://drive.google.com/..." /></div>
+          <div class="form-group">
+            <label>Receipt (Photo / File)</label>
+            <div class="upload-area" id="reimb-upload-area" onclick="document.getElementById('reimb-file-input').click()">
+              <div class="upload-icon">📎</div>
+              <div class="upload-label" id="reimb-upload-label">Click to attach receipt</div>
+              <div class="upload-hint">JPG, PNG, or PDF · Max 10MB</div>
+            </div>
+            <input type="file" id="reimb-file-input" accept="image/*,.pdf" style="display:none;" onchange="handleReceiptFile(this)" />
+            <div class="upload-preview" id="reimb-upload-preview" style="display:none;">
+              <span id="reimb-file-name" style="font-size:12px;color:var(--teal);"></span>
+              <button onclick="clearReceiptFile()" style="background:none;border:none;color:var(--grey);cursor:pointer;font-size:12px;margin-left:8px;">✕ Remove</button>
+            </div>
+          </div>
           <button class="btn-submit" onclick="submitReimb()">Submit Request</button>
         </div>
         <div class="panel">
@@ -724,6 +750,7 @@
 <div class="modal-overlay" id="modal-add-event">
   <div class="modal-box">
     <div class="modal-title">📅 Add Calendar Event</div>
+    <div id="ev-cal-type-label" style="font-size:11px;color:var(--teal);letter-spacing:1px;margin-bottom:8px;">🎬 Content Calendar</div>
     <div class="modal-sub">This will be added to the portal calendar. Connect Google Calendar to sync automatically.</div>
     <div class="modal-form-group"><label>Event Title</label><input type="text" id="ev-title" placeholder="e.g. ConMen Shoot Day" /></div>
     <div class="modal-form-group"><label>Date</label><input type="date" id="ev-date" /></div>
@@ -886,6 +913,8 @@ function initApp() {
   loadTasks();
   renderCalendar(calYear, calMonth);
   renderReimb();
+  renderAnnouncements('ann-items-container');
+  renderDashAnnouncements();
   navigate('dashboard', document.querySelector('.nav-item'));
 }
 
@@ -983,15 +1012,91 @@ function loadTasks() {
     container.appendChild(list);
   });
 
-  // Update dashboard count
-  const total = taskData.reduce((a,s)=>a+s.items.length, 0);
-  const el = document.getElementById('dash-tasks');
-  if (el) el.textContent = total;
+  // Restore saved statuses
+  const sel2 = document.getElementById('task-role-switcher');
+  const vr = sel2 ? sel2.value : currentUser.role;
+  restoreTaskStatuses(vr);
+
+  // Update dashboard count from saved status
+  const counts = JSON.parse(localStorage.getItem('ctrl3_task_counts') || '{}');
+  const myRole2 = currentUser.role === 'kaila' ? 'kaila' : currentUser.role;
+  const dashEl = document.getElementById('dash-tasks');
+  if (dashEl) {
+    const saved = counts[myRole2];
+    if (saved !== undefined) {
+      dashEl.textContent = saved;
+    } else {
+      const total = taskData.reduce((a,s)=>a+s.items.length, 0);
+      dashEl.textContent = total;
+    }
+  }
+  // Reset save bar
+  document.getElementById('tasks-save-bar').style.display = 'none';
 }
 
 function toggleTask(el) {
   el.classList.toggle('checked');
   el.nextElementSibling.querySelector('.task-name').classList.toggle('done');
+  // Show save bar
+  document.getElementById('tasks-save-bar').style.display = 'block';
+}
+
+function getTaskStatusDB() {
+  const s = localStorage.getItem('ctrl3_task_status');
+  return s ? JSON.parse(s) : {};
+}
+function saveTaskStatusDB(d) { localStorage.setItem('ctrl3_task_status', JSON.stringify(d)); }
+
+function saveTaskStatus() {
+  const sel = document.getElementById('task-role-switcher');
+  const viewRole = sel ? sel.value : currentUser.role;
+
+  // Collect current checked state
+  const checkboxes = document.querySelectorAll('.task-checkbox');
+  const names = document.querySelectorAll('.task-name');
+  const statusMap = {};
+  checkboxes.forEach((cb, i) => {
+    const name = names[i] ? names[i].textContent.trim() : i;
+    statusMap[name] = cb.classList.contains('checked');
+  });
+
+  const db = getTaskStatusDB();
+  db[viewRole] = statusMap;
+  saveTaskStatusDB(db);
+
+  // Count pending (unchecked)
+  const pending = Object.values(statusMap).filter(v => !v).length;
+  updateTaskDashCount(viewRole, pending);
+
+  document.getElementById('tasks-save-bar').style.display = 'none';
+  showToast('💾 Task status saved! ' + pending + ' pending task' + (pending!==1?'s':'') + ' remaining.');
+}
+
+function updateTaskDashCount(role, pending) {
+  // Store per-role pending counts
+  const counts = JSON.parse(localStorage.getItem('ctrl3_task_counts') || '{}');
+  counts[role] = pending;
+  localStorage.setItem('ctrl3_task_counts', JSON.stringify(counts));
+  // Update dashboard — show user's own role pending count
+  const myRole = currentUser.role === 'kaila' ? 'kaila' : currentUser.role;
+  const myPending = counts[myRole] !== undefined ? counts[myRole] : null;
+  const el = document.getElementById('dash-tasks');
+  if (el && myPending !== null) el.textContent = myPending;
+}
+
+function restoreTaskStatuses(viewRole) {
+  const db = getTaskStatusDB();
+  const statusMap = db[viewRole] || {};
+  if (!Object.keys(statusMap).length) return;
+  const checkboxes = document.querySelectorAll('.task-checkbox');
+  const names = document.querySelectorAll('.task-name');
+  checkboxes.forEach((cb, i) => {
+    const name = names[i] ? names[i].textContent.trim() : '';
+    if (statusMap[name]) {
+      cb.classList.add('checked');
+      names[i].classList.add('done');
+    }
+  });
 }
 
 function openAddTask() {
@@ -1052,6 +1157,16 @@ const CALENDAR_API_URL = 'https://api.base44.app/api/apps/6a089110f76438ad643648
 let calMonth = new Date().getMonth(), calYear = new Date().getFullYear();
 let calEventsCache = {}; // { 'YYYY-MM-DD': [event, ...] }
 let calLoading = false;
+let activeCalTab = 'content'; // 'content' | 'booking'
+
+function switchCalTab(tab) {
+  activeCalTab = tab;
+  document.getElementById('cal-tab-content').classList.toggle('active', tab === 'content');
+  document.getElementById('cal-tab-booking').classList.toggle('active', tab === 'booking');
+  const labels = { content: '🎬 Content Calendar', booking: '🏠 Rec Room Bookings' };
+  document.getElementById('cal-tab-label').textContent = labels[tab] || tab;
+  renderCalendar(calYear, calMonth);
+}
 
 async function fetchCalendarEvents(year, month) {
   calLoading = true;
@@ -1064,6 +1179,12 @@ async function fetchCalendarEvents(year, month) {
     const data = await res.json();
     calEventsCache = {};
     for (const ev of (data.events || [])) {
+      // Filter by active calendar tab
+      const evTab = ev.calendar_tab || (
+        (ev.event_type === 'event-red' || (ev.title||'').toLowerCase().includes('rec room') || (ev.title||'').toLowerCase().includes('booking')) 
+          ? 'booking' : 'content'
+      );
+      if (evTab !== activeCalTab) continue;
       if (!calEventsCache[ev.date]) calEventsCache[ev.date] = [];
       calEventsCache[ev.date].push(ev);
     }
@@ -1120,6 +1241,8 @@ async function renderCalendar(year, month) {
         document.getElementById('ev-notes').value = '';
         document.getElementById('ev-type').value = '';
         document.getElementById('ev-added-by').textContent = currentUser.name;
+        const calTypeEl2 = document.getElementById('ev-cal-type-label');
+        if (calTypeEl2) calTypeEl2.textContent = activeCalTab === 'booking' ? '🏠 Adding to: Rec Room Bookings' : '🎬 Adding to: Content Calendar';
         openModal('modal-add-event');
       };
     }
@@ -1149,6 +1272,10 @@ function openAddEvent() {
   document.getElementById('ev-notes').value = '';
   document.getElementById('ev-type').value = '';
   document.getElementById('ev-added-by').textContent = currentUser.name;
+  // Show calendar type context
+  const calTypeEl = document.getElementById('ev-cal-type-label');
+  if (calTypeEl) calTypeEl.textContent = activeCalTab === 'booking' ? '🏠 Adding to: Rec Room Bookings' : '🎬 Adding to: Content Calendar';
+  document.getElementById('ev-added-by').textContent = currentUser.name;
   openModal('modal-add-event');
 }
 
@@ -1167,7 +1294,8 @@ async function saveEvent() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         action: 'add', title, date, time, notes, event_type: type,
-        added_by_name: currentUser.name, added_by_email: currentUser.email
+        added_by_name: currentUser.name, added_by_email: currentUser.email,
+        calendar_tab: activeCalTab
       })
     });
     const data = await res.json();
@@ -1278,23 +1406,82 @@ function renderReimb() {
   });
 }
 
-function submitReimb() {
+// ── RECEIPT FILE HANDLING ──
+let uploadedReceiptUrl = '';
+let pendingReceiptFile = null;
+
+function handleReceiptFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) { showToast('⚠️ File too large. Max 10MB.'); return; }
+  pendingReceiptFile = file;
+  document.getElementById('reimb-file-name').textContent = file.name;
+  document.getElementById('reimb-upload-preview').style.display = 'flex';
+  document.getElementById('reimb-upload-area').style.borderColor = 'var(--teal)';
+  document.getElementById('reimb-upload-label').textContent = '📎 ' + file.name;
+}
+
+function clearReceiptFile() {
+  pendingReceiptFile = null;
+  uploadedReceiptUrl = '';
+  document.getElementById('reimb-file-input').value = '';
+  document.getElementById('reimb-upload-preview').style.display = 'none';
+  document.getElementById('reimb-upload-area').style.borderColor = '';
+  document.getElementById('reimb-upload-label').textContent = 'Click to attach receipt';
+}
+
+async function uploadReceiptToDrive(file) {
+  try {
+    // Convert file to base64
+    const base64 = await new Promise((res, rej) => {
+      const reader = new FileReader();
+      reader.onload = () => res(reader.result.split(',')[1]);
+      reader.onerror = rej;
+      reader.readAsDataURL(file);
+    });
+    const resp = await fetch('https://api.base44.app/api/apps/6a089110f76438ad64364898/functions/calendarApi', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'uploadReceipt',
+        fileName: file.name,
+        mimeType: file.type,
+        base64Data: base64,
+        uploadedBy: currentUser.name
+      })
+    });
+    const data = await resp.json();
+    return data.fileUrl || '';
+  } catch(e) {
+    console.warn('Drive upload failed:', e);
+    return '';
+  }
+}
+
+async function submitReimb() {
   const amount  = document.getElementById('reimb-amount').value;
   const date    = document.getElementById('reimb-date').value;
   const desc    = document.getElementById('reimb-desc').value.trim();
   const cat     = document.getElementById('reimb-cat').value;
-  const receipt = document.getElementById('reimb-receipt').value.trim();
   if (!amount || !date || !desc) { showToast('⚠️ Please fill in all required fields.'); return; }
+
+  let receipt = '';
+  if (pendingReceiptFile) {
+    showToast('⏳ Uploading receipt...');
+    receipt = await uploadReceiptToDrive(pendingReceiptFile);
+    if (!receipt) showToast('⚠️ Receipt upload failed — submitting without it.');
+  }
 
   const db = getReimbDB();
   const d = new Date(date);
   const label = d.toLocaleDateString('en-PH',{month:'short',day:'numeric'});
-  db.unshift({ filer:currentUser.name, email:currentUser.email, date:label, cat, amount:parseFloat(amount), receipt, status:'pending' });
+  db.unshift({ filer:currentUser.name, email:currentUser.email, date:label, cat, amount:parseFloat(amount), receipt, status:'pending', desc });
   saveReimbDB(db);
+
   document.getElementById('reimb-amount').value = '';
   document.getElementById('reimb-date').value = '';
   document.getElementById('reimb-desc').value = '';
-  document.getElementById('reimb-receipt').value = '';
+  clearReceiptFile();
   renderReimb();
   showToast('✅ Reimbursement submitted!');
 
@@ -1327,22 +1514,112 @@ function approveReimb(idx) {
 }
 
 // ══ ANNOUNCEMENTS ══
+function getAnnouncementsDB() {
+  const s = localStorage.getItem('ctrl3_announcements');
+  if (s) return JSON.parse(s);
+  const d = [
+    { id:'ann001', title:'All-Hands Meeting — June 17', body:'First all-hands meeting for CTRL 3 and ConMen. All employees to attend. Agenda will be distributed beforehand.', poster:'Gino', date:'June 17, 2026', readers:[] },
+    { id:'ann002', title:'BPI Account Requirement',    body:'All employees must open a BPI account for automated salary crediting. Complete by June 30, 2026.',               poster:'Kaila', date:'June 15, 2026', readers:[] },
+    { id:'ann003', title:'Payroll Schedule — June 2026', body:'Salaries are credited every 15th and 30th. File all leave requests with Kaila in advance.',                    poster:'Kaila', date:'June 14, 2026', readers:[] },
+  ];
+  localStorage.setItem('ctrl3_announcements', JSON.stringify(d));
+  return d;
+}
+function saveAnnouncementsDB(db) { localStorage.setItem('ctrl3_announcements', JSON.stringify(db)); }
+
+function renderAnnouncements(targetId) {
+  const db = getAnnouncementsDB();
+  const isAdmin = ['admin','kaila'].includes(currentUser.role);
+  const container = document.getElementById(targetId);
+  if (!container) return;
+
+  if (!db.length) { container.innerHTML = '<div style="color:var(--grey);padding:20px 0;font-size:13px;">No announcements yet.</div>'; return; }
+
+  container.innerHTML = db.map((ann, idx) => {
+    const hasRead = ann.readers.includes(currentUser.email);
+    const isNew = !hasRead;
+    const readBtn = !hasRead
+      ? `<button class="ann-read-btn" onclick="markAnnRead('${ann.id}')">✓ Mark as Read</button>`
+      : `<span class="ann-read-badge">✓ You've read this</span>`;
+    const readerList = isAdmin && ann.readers.length
+      ? `<div class="ann-readers">Read by: ${ann.readers.length} employee${ann.readers.length>1?'s':''}</div>`
+      : '';
+    const deleteBtn = isAdmin
+      ? `<button onclick="deleteAnn('${ann.id}')" style="background:none;border:none;color:var(--grey);cursor:pointer;font-size:11px;margin-left:8px;opacity:0.5;" title="Delete">✕</button>`
+      : '';
+    return \`<div class="announcement-item" id="ann-item-\${ann.id}">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="ann-title">\${ann.title}\${deleteBtn}</div>
+        \${isNew ? '<span class=\"tag tag-teal\">New</span>' : ''}
+      </div>
+      <div class="ann-meta">Posted by \${ann.poster} · \${ann.date}</div>
+      <div class="ann-body">\${ann.body}</div>
+      \${readBtn}
+      \${readerList}
+    </div>\`;
+  }).join('');
+
+  // Update dash unread count
+  const unread = db.filter(a => !a.readers.includes(currentUser.email)).length;
+  const dashEl = document.getElementById('dash-ann-count');
+  if (dashEl) dashEl.textContent = unread;
+}
+
+function markAnnRead(annId) {
+  const db = getAnnouncementsDB();
+  const ann = db.find(a => a.id === annId);
+  if (!ann) return;
+  if (!ann.readers.includes(currentUser.email)) {
+    ann.readers.push(currentUser.email);
+    saveAnnouncementsDB(db);
+  }
+  renderAnnouncements('ann-items-container');
+  renderDashAnnouncements();
+  showToast('✓ Marked as read');
+}
+
+function deleteAnn(annId) {
+  if (!confirm('Delete this announcement?')) return;
+  const db = getAnnouncementsDB().filter(a => a.id !== annId);
+  saveAnnouncementsDB(db);
+  renderAnnouncements('ann-items-container');
+  renderDashAnnouncements();
+}
+
+function renderDashAnnouncements() {
+  const db = getAnnouncementsDB().slice(0, 3);
+  const c = document.getElementById('dash-ann-container');
+  if (!c) return;
+  const unread = getAnnouncementsDB().filter(a => !a.readers.includes(currentUser.email)).length;
+  const dashCountEl = document.getElementById('dash-ann-stat');
+  if (dashCountEl) dashCountEl.textContent = unread;
+
+  c.innerHTML = db.map(ann => {
+    const hasRead = ann.readers.includes(currentUser.email);
+    return \`<div class="announcement-item">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="ann-title">\${ann.title}</div>
+        \${!hasRead ? '<span class=\"tag tag-teal\">Unread</span>' : ''}
+      </div>
+      <div class="ann-meta">Posted by \${ann.poster} · \${ann.date}</div>
+      <div class="ann-body">\${ann.body.substring(0,120)}\${ann.body.length>120?'...':''}</div>
+    </div>\`;
+  }).join('');
+}
+
 function postAnnouncement() {
   const title = document.getElementById('ann-title-input').value.trim();
   const body  = document.getElementById('ann-body-input').value.trim();
   if (!title || !body) return;
-  const list = document.getElementById('announcements-list');
+  const db = getAnnouncementsDB();
   const today = new Date().toLocaleDateString('en-PH',{month:'long',day:'numeric',year:'numeric'});
-  const div = document.createElement('div');
-  div.className = 'announcement-item';
-  div.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;"><div class="ann-title">${title}</div><span class="tag tag-teal">New</span></div>
-    <div class="ann-meta">Posted by ${currentUser.name.split(' ')[0]} · ${today}</div>
-    <div class="ann-body">${body}</div>
-  `;
-  list.prepend(div);
+  const newId = 'ann' + Date.now();
+  db.unshift({ id:newId, title, body, poster:currentUser.name.split(' ')[0], date:today, readers:[currentUser.email] });
+  saveAnnouncementsDB(db);
   document.getElementById('ann-title-input').value = '';
   document.getElementById('ann-body-input').value = '';
+  renderAnnouncements('ann-items-container');
+  renderDashAnnouncements();
   showToast('📢 Announcement posted!');
 }
 
