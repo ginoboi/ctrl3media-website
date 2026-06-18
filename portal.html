@@ -668,9 +668,7 @@
         <button class="btn-ghost">📤 Export</button>
       </div>
       <div class="content-grid" id="content-grid">
-        <div class="content-card"><div class="cc-week">Week of June 16</div><div class="cc-title">ConMen Ep. 12 Highlights</div><div class="cc-format">📹 Video reel · Instagram / TikTok</div><div class="cc-footer"><span class="tag tag-teal">Published</span><span style="font-size:12px;color:var(--grey);">Ram + Dex</span></div></div>
-        <div class="content-card"><div class="cc-week">Week of June 16</div><div class="cc-title">Behind the Scenes — Shoot Day</div><div class="cc-format">📸 Carousel · Instagram</div><div class="cc-footer"><span class="tag tag-warning">In Edit</span><span style="font-size:12px;color:var(--grey);">Dex</span></div></div>
-        <div class="content-card"><div class="cc-week">Week of June 23</div><div class="cc-title">Thought Starter — Dating Show Take</div><div class="cc-format">🎙 Talking head · All platforms</div><div class="cc-footer"><span class="tag tag-danger">Planned</span><span style="font-size:12px;color:var(--grey);">Ram</span></div></div>
+        <!-- Content calendar loads dynamically from Google Calendar -->
       </div>
     </div>
 
@@ -1165,6 +1163,7 @@ function switchCalTab(tab) {
   document.getElementById('cal-tab-booking').classList.toggle('active', tab === 'booking');
   const labels = { content: '🎬 Content Calendar', booking: '🏠 Rec Room Bookings' };
   document.getElementById('cal-tab-label').textContent = labels[tab] || tab;
+  calEventsCache = {}; // clear cache so we fetch from the correct calendar
   renderCalendar(calYear, calMonth);
 }
 
@@ -1174,7 +1173,7 @@ async function fetchCalendarEvents(year, month) {
     const res = await fetch(CALENDAR_API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'list', year, month })
+      body: JSON.stringify({ action: 'list', year, month, calendar_tab: activeCalTab })
     });
     const data = await res.json();
     calEventsCache = {};
@@ -1360,12 +1359,7 @@ async function deleteCalEvent(eventId) {
 function getReimbDB() {
   const s = localStorage.getItem('ctrl3_reimb');
   if (s) return JSON.parse(s);
-  const d = [
-    { filer:'Kaila Edillon', email:'kaila.edillon@ctrl3media.com', date:'Jun 10', cat:'Transportation', amount:350, receipt:'', status:'approved' },
-    { filer:'Kaila Edillon', email:'kaila.edillon@ctrl3media.com', date:'Jun 5', cat:'Supplies', amount:1200, receipt:'', status:'pending' },
-  ];
-  localStorage.setItem('ctrl3_reimb', JSON.stringify(d));
-  return d;
+  return [];
 }
 function saveReimbDB(db) { localStorage.setItem('ctrl3_reimb', JSON.stringify(db)); }
 
@@ -1518,9 +1512,8 @@ function getAnnouncementsDB() {
   const s = localStorage.getItem('ctrl3_announcements');
   if (s) return JSON.parse(s);
   const d = [
-    { id:'ann001', title:'All-Hands Meeting — June 17', body:'First all-hands meeting for CTRL 3 and ConMen. All employees to attend. Agenda will be distributed beforehand.', poster:'Gino', date:'June 17, 2026', readers:[] },
-    { id:'ann002', title:'BPI Account Requirement',    body:'All employees must open a BPI account for automated salary crediting. Complete by June 30, 2026.',               poster:'Kaila', date:'June 15, 2026', readers:[] },
-    { id:'ann003', title:'Payroll Schedule — June 2026', body:'Salaries are credited every 15th and 30th. File all leave requests with Kaila in advance.',                    poster:'Kaila', date:'June 14, 2026', readers:[] },
+    { id:'ann001', title:'✅ All-Hands Meeting — June 17 (Done)', body:'Our first all-hands meeting has concluded. Thank you to everyone who attended. Minutes and follow-up items will be shared by Kaila.', poster:'Gino', date:'June 17, 2026', readers:[] },
+    { id:'ann002', title:'ACTION REQUIRED: BPI Account Enrollment', body:'All employees must open a BPI account for automated salary crediting. Please complete your enrollment by June 30, 2026. Coordinate with Kaila if you need assistance.', poster:'Kaila', date:'June 15, 2026', readers:[] },
   ];
   localStorage.setItem('ctrl3_announcements', JSON.stringify(d));
   return d;
