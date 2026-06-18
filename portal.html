@@ -721,7 +721,7 @@
         <div class="kpi-card"><div class="kpi-label">Pending Reimbursements</div><div class="kpi-val" id="fin-reimb-count">—</div><div class="kpi-sub">items pending</div></div>
       </div>
       <div class="panel">
-        <div class="panel-header"><div class="panel-title">Recent Invoices</div><button class="btn-action" style="font-size:12px;padding:7px 14px;">+ New Invoice</button></div>
+        <div class="panel-header"><div class="panel-title">Recent Invoices</div><div style="display:flex;gap:8px;"><button class="btn-action" style="font-size:12px;padding:7px 14px;" onclick="openModal('modal-new-invoice')">+ New Invoice</button><button class="btn-ghost" style="font-size:12px;padding:7px 14px;" onclick="openModal('modal-new-expense')">+ Log Expense</button></div></div>
         <div class="fin-table-wrap"><table class="reimb-table">
           <thead><tr><th>Invoice #</th><th>Client</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead>
           <tbody>
@@ -731,6 +731,87 @@
           </tbody>
         </table>
       </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL: New Invoice -->
+<div class="modal-overlay" id="modal-new-invoice">
+  <div class="modal-box">
+    <div class="modal-title">🧾 New Invoice</div>
+    <div class="modal-sub">This will be logged to the CTRL 3 Invoice Tracker in Google Sheets.</div>
+    <div class="modal-form-group"><label>Invoice No.</label><input type="text" id="inv-no" placeholder="e.g. 0004" /></div>
+    <div class="modal-form-group"><label>Client</label><input type="text" id="inv-client" placeholder="e.g. Gushcloud" /></div>
+    <div class="modal-form-group"><label>Nature of Service</label><input type="text" id="inv-service" placeholder="e.g. Content Production" /></div>
+    <div class="modal-form-group"><label>Amount (ex VAT) ₱</label><input type="number" id="inv-amount" placeholder="e.g. 50000" /></div>
+    <div class="modal-form-group"><label>Date Issued</label><input type="date" id="inv-date-issued" /></div>
+    <div class="modal-form-group"><label>Due Date</label><input type="date" id="inv-due-date" /></div>
+    <div class="modal-form-group"><label>Status</label>
+      <select id="inv-status">
+        <option value="PENDING">Pending</option>
+        <option value="PAID">Paid</option>
+        <option value="OVERDUE">Overdue</option>
+      </select>
+    </div>
+    <div class="modal-form-group"><label>Notes (optional)</label><textarea id="inv-notes" placeholder="Any additional info..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('modal-new-invoice')">Cancel</button>
+      <button class="btn-action" id="inv-submit-btn" onclick="submitInvoice()">Log Invoice</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Log Expense -->
+<div class="modal-overlay" id="modal-new-expense">
+  <div class="modal-box">
+    <div class="modal-title">💸 Log Expense</div>
+    <div class="modal-sub">This will be added to the Consolidated Expense Tracker — MASTER LOG.</div>
+    <div class="modal-form-group"><label>Date</label><input type="date" id="exp-date" /></div>
+    <div class="modal-form-group"><label>Entity</label>
+      <select id="exp-entity">
+        <option value="CTRL 3 Media">CTRL 3 Media</option>
+        <option value="Rec Room">Rec Room</option>
+        <option value="ConMen">ConMen</option>
+      </select>
+    </div>
+    <div class="modal-form-group"><label>Category</label>
+      <select id="exp-category">
+        <option value="Transportation">Transportation</option>
+        <option value="Food & Entertainment">Food & Entertainment</option>
+        <option value="Office Supplies">Office Supplies</option>
+        <option value="Production">Production</option>
+        <option value="Marketing">Marketing</option>
+        <option value="Utilities">Utilities</option>
+        <option value="Professional Fees">Professional Fees</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="modal-form-group"><label>Description</label><input type="text" id="exp-desc" placeholder="What was this for?" /></div>
+    <div class="modal-form-group"><label>Vendor / Payee</label><input type="text" id="exp-vendor" placeholder="e.g. Grab, SM Supermarket" /></div>
+    <div class="modal-form-group"><label>Amount ₱</label><input type="number" id="exp-amount" placeholder="e.g. 1500" /></div>
+    <div class="modal-form-group"><label>Paid By</label><input type="text" id="exp-paid-by" placeholder="e.g. Gino Quillamor" /></div>
+    <div class="modal-form-group"><label>Payment Method</label>
+      <select id="exp-method">
+        <option value="BPI">BPI</option>
+        <option value="GCash">GCash</option>
+        <option value="Cash">Cash</option>
+        <option value="Credit Card">Credit Card</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="modal-form-group"><label>Reference No. (optional)</label><input type="text" id="exp-ref" placeholder="Transaction ref if any" /></div>
+    <div class="modal-form-group"><label>Reimbursable?</label>
+      <select id="exp-reimb">
+        <option value="No">No</option>
+        <option value="Yes">Yes</option>
+      </select>
+    </div>
+    <div class="modal-form-group"><label>Receipt Link (optional)</label><input type="text" id="exp-receipt" placeholder="Google Drive link or URL" /></div>
+    <div class="modal-form-group"><label>Notes (optional)</label><textarea id="exp-notes" placeholder="Any additional info..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('modal-new-expense')">Cancel</button>
+      <button class="btn-action" id="exp-submit-btn" onclick="submitExpense()">Log Expense</button>
     </div>
   </div>
 </div>
@@ -1440,6 +1521,94 @@ function showToast(msg) {
     });
   });
 
+
+// ── INVOICE SUBMIT ───────────────────────────────────────────────────────────
+async function submitInvoice() {
+  const invNo      = document.getElementById('inv-no').value.trim();
+  const client     = document.getElementById('inv-client').value.trim();
+  const service    = document.getElementById('inv-service').value.trim();
+  const amount     = document.getElementById('inv-amount').value;
+  const dateIssued = document.getElementById('inv-date-issued').value;
+  const dueDate    = document.getElementById('inv-due-date').value;
+  const status     = document.getElementById('inv-status').value;
+  const notes      = document.getElementById('inv-notes').value.trim();
+
+  if (!invNo || !client || !amount || !dateIssued) { showToast('⚠️ Fill in Invoice No., Client, Amount, and Date Issued.'); return; }
+
+  const btn = document.getElementById('inv-submit-btn');
+  btn.textContent = 'Logging...'; btn.disabled = true;
+
+  try {
+    const resp = await fetch('https://veronica-64364898.base44.app/functions/sheetsSync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'invoice',
+        data: { invoiceNo: invNo, client, service, amountExVat: parseFloat(amount), dateIssued, dueDate, status, notes }
+      })
+    });
+    const result = await resp.json();
+    if (result.ok) {
+      showToast('✅ Invoice logged to Google Sheets!');
+      closeModal('modal-new-invoice');
+      document.getElementById('inv-no').value = '';
+      document.getElementById('inv-client').value = '';
+      document.getElementById('inv-service').value = '';
+      document.getElementById('inv-amount').value = '';
+      document.getElementById('inv-date-issued').value = '';
+      document.getElementById('inv-due-date').value = '';
+      document.getElementById('inv-notes').value = '';
+    } else {
+      showToast('❌ Failed to log invoice. Try again.');
+    }
+  } catch(e) {
+    showToast('❌ Network error. Try again.');
+  }
+  btn.textContent = 'Log Invoice'; btn.disabled = false;
+}
+
+// ── EXPENSE SUBMIT ───────────────────────────────────────────────────────────
+async function submitExpense() {
+  const date    = document.getElementById('exp-date').value;
+  const entity  = document.getElementById('exp-entity').value;
+  const cat     = document.getElementById('exp-category').value;
+  const desc    = document.getElementById('exp-desc').value.trim();
+  const vendor  = document.getElementById('exp-vendor').value.trim();
+  const amount  = document.getElementById('exp-amount').value;
+  const paidBy  = document.getElementById('exp-paid-by').value.trim();
+  const method  = document.getElementById('exp-method').value;
+  const ref     = document.getElementById('exp-ref').value.trim();
+  const reimb   = document.getElementById('exp-reimb').value;
+  const receipt = document.getElementById('exp-receipt').value.trim();
+  const notes   = document.getElementById('exp-notes').value.trim();
+
+  if (!date || !desc || !amount || !paidBy) { showToast('⚠️ Fill in Date, Description, Amount, and Paid By.'); return; }
+
+  const btn = document.getElementById('exp-submit-btn');
+  btn.textContent = 'Logging...'; btn.disabled = true;
+
+  try {
+    const resp = await fetch('https://veronica-64364898.base44.app/functions/sheetsSync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'expense',
+        data: { date, entity, category: cat, description: desc, vendor, amount: parseFloat(amount), paidBy, paymentMethod: method, refNo: ref, reimbursable: reimb, receiptLink: receipt, notes }
+      })
+    });
+    const result = await resp.json();
+    if (result.ok) {
+      showToast('✅ Expense logged to Google Sheets!');
+      closeModal('modal-new-expense');
+      ['exp-date','exp-desc','exp-vendor','exp-amount','exp-paid-by','exp-ref','exp-receipt','exp-notes'].forEach(id => document.getElementById(id).value = '');
+    } else {
+      showToast('❌ Failed to log expense. Try again.');
+    }
+  } catch(e) {
+    showToast('❌ Network error. Try again.');
+  }
+  btn.textContent = 'Log Expense'; btn.disabled = false;
+}
 </script>
 </body>
 </html>
