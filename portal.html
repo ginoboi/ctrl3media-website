@@ -744,6 +744,22 @@
   </div>
 </div>
 
+<!-- MODAL: Edit Calendar Event -->
+<div class="modal-overlay" id="modal-edit-event">
+  <div class="modal-box">
+    <div class="modal-title">✏️ Edit Event</div>
+    <input type="hidden" id="edit-ev-id" />
+    <div class="modal-form-group"><label>Event Title</label><input type="text" id="edit-ev-title" placeholder="Event title" /></div>
+    <div class="modal-form-group"><label>Date</label><input type="date" id="edit-ev-date" /></div>
+    <div class="modal-form-group"><label>Time (optional)</label><input type="time" id="edit-ev-time" /></div>
+    <div class="modal-form-group"><label>Notes (optional)</label><textarea id="edit-ev-notes" placeholder="Any details..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('modal-edit-event')">Cancel</button>
+      <button class="btn-action" onclick="saveEditedEvent()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: Add Calendar Event -->
 <div class="modal-overlay" id="modal-add-event">
   <div class="modal-box">
@@ -1315,22 +1331,66 @@ function showEventDetail(key, evs) {
   const isAdminOrKaila = ['admin','kaila'].includes(currentUser.role);
 
   document.getElementById('modal-event-body').innerHTML = evs.map(e => {
-    const canDelete = isAdminOrKaila || (e.added_by_email === currentUser.email);
-    const delBtn = canDelete
-      ? `<button onclick="deleteCalEvent('${e.id}')" style="background:none;border:1px solid rgba(255,77,77,0.3);border-radius:6px;padding:3px 10px;color:#ff8080;font-size:11px;cursor:pointer;margin-top:8px;">🗑 Delete</button>`
-      : '';
+    const canEdit = isAdminOrKaila || (e.added_by_email === currentUser.email);
     const timeStr = e.time ? ` · ${e.time}` : '';
+    const actionBtns = canEdit ? `
+      <div style="display:flex;gap:8px;margin-top:10px;">
+        <button onclick="openEditEvent('${e.id}','${e.title.replace(/'/g,"\'")}','${e.date}','${e.time||''}',\`${(e.notes||'').replace(/\`/g,'\`')}\`)" style="background:none;border:1px solid rgba(0,212,180,0.3);border-radius:6px;padding:4px 12px;color:var(--teal);font-size:11px;cursor:pointer;">✏️ Edit</button>
+        <button onclick="deleteCalEvent('${e.id}')" style="background:none;border:1px solid rgba(255,77,77,0.3);border-radius:6px;padding:4px 12px;color:#ff8080;font-size:11px;cursor:pointer;">🗑 Delete</button>
+      </div>` : '';
     return `
       <div style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
         <div style="font-size:15px;font-weight:600;color:#fff;margin-bottom:4px;">${e.title}${timeStr}</div>
         ${e.notes ? `<div style="font-size:13px;color:#999;margin-bottom:6px;">${e.notes}</div>` : ''}
         <div style="font-size:11px;color:#666;">Added by: <span style="color:var(--teal);">${e.added_by_name || 'System'}</span></div>
-        ${delBtn}
+        ${actionBtns}
       </div>
     `;
   }).join('');
 
   openModal('modal-event');
+}
+
+function openEditEvent(id, title, date, time, notes) {
+  document.getElementById('edit-ev-id').value = id;
+  document.getElementById('edit-ev-title').value = title;
+  document.getElementById('edit-ev-date').value = date;
+  document.getElementById('edit-ev-time').value = time || '';
+  document.getElementById('edit-ev-notes').value = notes || '';
+  closeModal('modal-event');
+  openModal('modal-edit-event');
+}
+
+async function saveEditedEvent() {
+  const eventId = document.getElementById('edit-ev-id').value;
+  const title   = document.getElementById('edit-ev-title').value.trim();
+  const date    = document.getElementById('edit-ev-date').value;
+  const time    = document.getElementById('edit-ev-time').value;
+  const notes   = document.getElementById('edit-ev-notes').value.trim();
+  if (!title || !date) { showToast('⚠️ Title and date are required.'); return; }
+  showToast('⏳ Saving changes...');
+  try {
+    const res = await fetch(CALENDAR_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'edit',
+        event_id: eventId,
+        title, date, time, notes,
+        calendar_tab: activeCalTab,
+        requester_email: currentUser.email,
+        requester_role: currentUser.role
+      })
+    });
+    const data = await res.json();
+    if (data.error) { showToast('❌ ' + data.error); return; }
+    closeModal('modal-edit-event');
+    calEventsCache = {};
+    await renderCalendar(calYear, calMonth);
+    showToast('✅ Event updated.');
+  } catch(e) {
+    showToast('❌ Failed to save changes.');
+  }
 }
 
 async function deleteCalEvent(eventId) {
