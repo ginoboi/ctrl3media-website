@@ -147,14 +147,16 @@
     }
 
     .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 16px;
+      column-count: 3;
+      column-gap: 16px;
     }
 
     .gallery-grid img {
       width: 100%;
+      margin-bottom: 16px;
       border-radius: 8px;
+      break-inside: avoid;
+      display: block;
       cursor: pointer;
       transition: transform 0.3s, opacity 0.3s;
       opacity: 0;
@@ -217,7 +219,7 @@
       .project-hero { height: 45vh; min-height: 300px; margin-top: 60px; }
       .project-hero-content { bottom: 30px; padding: 0 20px; }
       .gallery { padding: 40px 20px 60px; }
-      .gallery-grid { grid-template-columns: 1fr; gap: 12px; }
+      .gallery-grid { column-count: 1; column-gap: 12px; }
     }
   </style>
 </head>
@@ -244,7 +246,6 @@
       <img src="/assets/events/zwift/zwift_03.jpg" alt="Zwift photo 3" loading="lazy" data-idx="2" />
       <img src="/assets/events/zwift/zwift_04.jpg" alt="Zwift photo 4" loading="lazy" data-idx="3" />
       <img src="/assets/events/zwift/zwift_05.jpg" alt="Zwift photo 5" loading="lazy" data-idx="4" />
-      
     </div>
   </section>
 

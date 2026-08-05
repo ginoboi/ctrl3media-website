@@ -147,14 +147,16 @@
     }
 
     .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 16px;
+      column-count: 3;
+      column-gap: 16px;
     }
 
     .gallery-grid img {
       width: 100%;
+      margin-bottom: 16px;
       border-radius: 8px;
+      break-inside: avoid;
+      display: block;
       cursor: pointer;
       transition: transform 0.3s, opacity 0.3s;
       opacity: 0;
@@ -217,7 +219,7 @@
       .project-hero { height: 45vh; min-height: 300px; margin-top: 60px; }
       .project-hero-content { bottom: 30px; padding: 0 20px; }
       .gallery { padding: 40px 20px 60px; }
-      .gallery-grid { grid-template-columns: 1fr; gap: 12px; }
+      .gallery-grid { column-count: 1; column-gap: 12px; }
     }
   </style>
 </head>
@@ -239,25 +241,24 @@
 
   <section class="gallery">
     <div class="gallery-grid">
-      <img src="/assets/events/rec-opening/rec-opening_01.jpg" alt="The Rec Room Opening Night photo 1" loading="lazy" data-idx="0" />
-      <img src="/assets/events/rec-opening/rec-opening_02.jpg" alt="The Rec Room Opening Night photo 2" loading="lazy" data-idx="1" />
-      <img src="/assets/events/rec-opening/rec-opening_03.jpg" alt="The Rec Room Opening Night photo 3" loading="lazy" data-idx="2" />
-      <img src="/assets/events/rec-opening/rec-opening_04.jpg" alt="The Rec Room Opening Night photo 4" loading="lazy" data-idx="3" />
-      <img src="/assets/events/rec-opening/rec-opening_05.jpg" alt="The Rec Room Opening Night photo 5" loading="lazy" data-idx="4" />
-      <img src="/assets/events/rec-opening/rec-opening_06.jpg" alt="The Rec Room Opening Night photo 6" loading="lazy" data-idx="5" />
-      <img src="/assets/events/rec-opening/rec-opening_07.jpg" alt="The Rec Room Opening Night photo 7" loading="lazy" data-idx="6" />
-      <img src="/assets/events/rec-opening/rec-opening_08.jpg" alt="The Rec Room Opening Night photo 8" loading="lazy" data-idx="7" />
-      <img src="/assets/events/rec-opening/rec-opening_09.jpg" alt="The Rec Room Opening Night photo 9" loading="lazy" data-idx="8" />
-      <img src="/assets/events/rec-opening/rec-opening_10.jpg" alt="The Rec Room Opening Night photo 10" loading="lazy" data-idx="9" />
-      <img src="/assets/events/rec-opening/rec-opening_11.jpg" alt="The Rec Room Opening Night photo 11" loading="lazy" data-idx="10" />
-      <img src="/assets/events/rec-opening/rec-opening_12.jpg" alt="The Rec Room Opening Night photo 12" loading="lazy" data-idx="11" />
-      <img src="/assets/events/rec-opening/rec-opening_13.jpg" alt="The Rec Room Opening Night photo 13" loading="lazy" data-idx="12" />
-      <img src="/assets/events/rec-opening/rec-opening_14.jpg" alt="The Rec Room Opening Night photo 14" loading="lazy" data-idx="13" />
-      <img src="/assets/events/rec-opening/rec-opening_15.jpg" alt="The Rec Room Opening Night photo 15" loading="lazy" data-idx="14" />
-      <img src="/assets/events/rec-opening/rec-opening_16.jpg" alt="The Rec Room Opening Night photo 16" loading="lazy" data-idx="15" />
-      <img src="/assets/events/rec-opening/rec-opening_17.jpg" alt="The Rec Room Opening Night photo 17" loading="lazy" data-idx="16" />
-      <img src="/assets/events/rec-opening/rec-opening_18.jpg" alt="The Rec Room Opening Night photo 18" loading="lazy" data-idx="17" />
-      
+      <img src="/assets/events/rec-opening/rec-opening_02.jpg" alt="The Rec Room Opening Night photo 1" loading="lazy" data-idx="0" />
+      <img src="/assets/events/rec-opening/rec-opening_03.jpg" alt="The Rec Room Opening Night photo 2" loading="lazy" data-idx="1" />
+      <img src="/assets/events/rec-opening/rec-opening_04.jpg" alt="The Rec Room Opening Night photo 3" loading="lazy" data-idx="2" />
+      <img src="/assets/events/rec-opening/rec-opening_05.jpg" alt="The Rec Room Opening Night photo 4" loading="lazy" data-idx="3" />
+      <img src="/assets/events/rec-opening/rec-opening_06.jpg" alt="The Rec Room Opening Night photo 5" loading="lazy" data-idx="4" />
+      <img src="/assets/events/rec-opening/rec-opening_09.jpg" alt="The Rec Room Opening Night photo 6" loading="lazy" data-idx="5" />
+      <img src="/assets/events/rec-opening/rec-opening_10.jpg" alt="The Rec Room Opening Night photo 7" loading="lazy" data-idx="6" />
+      <img src="/assets/events/rec-opening/rec-opening_11.jpg" alt="The Rec Room Opening Night photo 8" loading="lazy" data-idx="7" />
+      <img src="/assets/events/rec-opening/rec-opening_14.jpg" alt="The Rec Room Opening Night photo 9" loading="lazy" data-idx="8" />
+      <img src="/assets/events/rec-opening/rec-opening_15.jpg" alt="The Rec Room Opening Night photo 10" loading="lazy" data-idx="9" />
+      <img src="/assets/events/rec-opening/rec-opening_16.jpg" alt="The Rec Room Opening Night photo 11" loading="lazy" data-idx="10" />
+      <img src="/assets/events/rec-opening/rec-opening_17.jpg" alt="The Rec Room Opening Night photo 12" loading="lazy" data-idx="11" />
+      <img src="/assets/events/rec-opening/rec-opening_18.jpg" alt="The Rec Room Opening Night photo 13" loading="lazy" data-idx="12" />
+      <img src="/assets/events/rec-opening/rec-opening_01.jpg" alt="The Rec Room Opening Night photo 14" loading="lazy" data-idx="13" />
+      <img src="/assets/events/rec-opening/rec-opening_07.jpg" alt="The Rec Room Opening Night photo 15" loading="lazy" data-idx="14" />
+      <img src="/assets/events/rec-opening/rec-opening_08.jpg" alt="The Rec Room Opening Night photo 16" loading="lazy" data-idx="15" />
+      <img src="/assets/events/rec-opening/rec-opening_12.jpg" alt="The Rec Room Opening Night photo 17" loading="lazy" data-idx="16" />
+      <img src="/assets/events/rec-opening/rec-opening_13.jpg" alt="The Rec Room Opening Night photo 18" loading="lazy" data-idx="17" />
     </div>
   </section>
 
