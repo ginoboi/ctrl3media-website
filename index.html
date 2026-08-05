@@ -3,222 +3,492 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CTRL 3 Media Inc.</title>
+  <title>CTRL 3 Media Inc. — Content · Strategy · Community</title>
   <link rel="icon" type="image/x-icon" href="https://base44.app/api/apps/6a089110f76438ad64364898/files/mp/public/6a089110f76438ad64364898/a2faa19de_favicon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html, body {
-      height: 100%;
-      background: #000;
-      color: #e8e8e8;
-      overflow: hidden;
+    :root {
+      --bg: #080808;
+      --bg-card: #0e0e0e;
+      --bg-card-hover: #131313;
+      --accent: #00c9a7;
+      --accent-dim: rgba(0,201,167,0.15);
+      --text: #e8e8e8;
+      --text-dim: #666;
+      --text-faint: #333;
+      --border: rgba(255,255,255,0.06);
+      --border-hover: rgba(0,201,167,0.3);
     }
 
+    html { scroll-behavior: smooth; }
+
     body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
       position: relative;
     }
 
-    /* subtle teal glow */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
-      background: radial-gradient(ellipse 55% 45% at 50% 50%, rgba(0,201,167,0.035) 0%, transparent 70%);
+      background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(0,201,167,0.04) 0%, transparent 60%);
       pointer-events: none;
       z-index: 0;
     }
 
-    /* ── CENTER BLOCK ── */
-    .center {
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 40px;
+      background: rgba(8,8,8,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav .nav-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 1px;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    nav .nav-logo span { color: var(--accent); }
+
+    nav .nav-links {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+
+    nav .nav-links a {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.25s;
+    }
+
+    nav .nav-links a:hover { color: var(--accent); }
+
+    .portal-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: all 0.25s;
+    }
+
+    .portal-badge:hover { color: var(--accent); border-color: var(--border-hover); }
+    .portal-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent); opacity: 0.6;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      padding: 80px 20px 60px;
+    }
+
+    .hero-logo {
+      width: 280px;
+      max-width: 70vw;
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.2s forwards;
+    }
+
+    .hero h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 700;
+      letter-spacing: -1px;
+      line-height: 1.1;
+      margin-bottom: 16px;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.4s forwards;
+    }
+
+    .hero h1 span { color: var(--accent); }
+
+    .hero p {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      max-width: 500px;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.6s forwards;
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      opacity: 0;
+      animation: fadeUp 1s ease 1s forwards, bounce 2s ease infinite 2s;
+    }
+
+    /* ── SECTIONS ── */
+    .section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 80px 40px;
       position: relative;
       z-index: 1;
     }
 
-    /* CTRL 3 logo — transparent PNG, crisp at all sizes */
-    .logo {
-      width: 340px;
-      max-width: 75vw;
-      opacity: 0;
-      animation: fadeUp 1s ease 0.3s forwards;
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 40px;
     }
 
-    /* BUILDING with blinking cursor */
-    .building {
+    .section-label {
       font-family: 'Space Grotesk', sans-serif;
       font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 6px;
+      font-weight: 600;
+      letter-spacing: 3px;
       text-transform: uppercase;
-      color: #444;
-      opacity: 0;
-      animation: fadeUp 1s ease 0.6s forwards;
-    }
-    .building::after {
-      content: '|';
-      color: #00c9a7;
-      animation: blink 1.1s step-end infinite;
-      margin-left: 3px;
+      color: var(--accent);
     }
 
-    /* TAGLINE */
-    .tagline {
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(24px, 4vw, 36px);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .section-divider {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── PROJECT GRID ── */
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .project-card {
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .project-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-hover);
+      transform: translateY(-4px);
+    }
+
+    .project-card .card-image {
+      width: 100%;
+      aspect-ratio: 16/10;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+
+    .project-card:hover .card-image { transform: scale(1.03); }
+
+    .project-card .card-body {
+      padding: 20px 24px;
+    }
+
+    .project-card .card-category {
       font-family: 'Space Grotesk', sans-serif;
       font-size: 10px;
-      font-weight: 400;
-      letter-spacing: 4px;
+      font-weight: 600;
+      letter-spacing: 2px;
       text-transform: uppercase;
-      color: #2a2a2a;
-      opacity: 0;
-      animation: fadeUp 1s ease 0.9s forwards;
+      color: var(--accent);
+      margin-bottom: 8px;
     }
 
-    /* ── BRAND LINKS (fixed bottom center) ── */
-    .brands {
-      position: fixed;
-      bottom: 64px;
-      left: 0;
-      right: 0;
+    .project-card .card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .project-card .card-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    .project-card .card-arrow {
+      position: absolute;
+      bottom: 20px;
+      right: 24px;
+      font-size: 18px;
+      color: var(--text-faint);
+      transition: all 0.3s;
+    }
+
+    .project-card:hover .card-arrow {
+      color: var(--accent);
+      transform: translateX(4px);
+    }
+
+    /* ── BRAND LINKS ── */
+    .brands-section {
+      text-align: center;
+      padding: 60px 40px 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brands-section .section-label {
+      margin-bottom: 28px;
+      display: block;
+    }
+
+    .brands-row {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 28px;
-      z-index: 2;
-      opacity: 0;
-      animation: fadeUp 1s ease 1.1s forwards;
+      gap: 40px;
     }
 
     .brand-link {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 7px;
+      gap: 10px;
       text-decoration: none;
-      transition: transform 0.2s ease, opacity 0.2s ease;
+      transition: transform 0.2s, opacity 0.2s;
     }
-    .brand-link:hover { transform: translateY(-3px); opacity: 0.7; }
 
-    /* Both logos: transparent PNGs, same rendered size */
+    .brand-link:hover { transform: translateY(-3px); opacity: 0.8; }
+
     .brand-logo {
-      width: 42px;
-      height: 42px;
+      width: 48px;
+      height: 48px;
       object-fit: contain;
-      flex-shrink: 0;
-    }
-
-    .brand-divider {
-      width: 1px;
-      height: 36px;
-      background: rgba(255,255,255,0.07);
     }
 
     .brand-name {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 9px;
+      font-size: 10px;
       font-weight: 600;
       letter-spacing: 3px;
       text-transform: uppercase;
-      color: #333;
+      color: var(--text-dim);
     }
 
-    /* ── PORTAL LINK (fixed bottom right) ── */
-    .portal-link {
-      position: fixed;
-      bottom: 24px;
-      right: 28px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-family: 'Space Grotesk', sans-serif;
+    .brand-divider {
+      width: 1px;
+      height: 40px;
+      background: var(--border);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      border-top: 1px solid var(--border);
+      position: relative;
+      z-index: 1;
+    }
+
+    footer p {
       font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: #444;
-      text-decoration: none;
-      background: rgba(255,255,255,0.03);
-      padding: 8px 16px;
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.07);
-      transition: color 0.25s, border-color 0.25s;
-      z-index: 2;
-      opacity: 0;
-      animation: fadeUp 1s ease 1.3s forwards;
+      color: var(--text-faint);
+      letter-spacing: 1px;
     }
-    .portal-link:hover { color: #00c9a7; border-color: rgba(0,201,167,0.3); }
-
-    .dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #00c9a7;
-      opacity: 0.6;
-      flex-shrink: 0;
-      transition: opacity 0.25s;
-    }
-    .portal-link:hover .dot { opacity: 1; }
 
     /* ── ANIMATIONS ── */
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(14px); }
-      to   { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(6px); }
+    }
 
     /* ── MOBILE ── */
     @media (max-width: 600px) {
-      .logo { width: 70vw; }
-      .brands { bottom: 62px; gap: 20px; }
-      .brand-logo { width: 36px; height: 36px; }
-      .portal-link { bottom: 18px; right: 14px; font-size: 10px; padding: 7px 13px; }
-      .tagline { font-size: 9px; letter-spacing: 3px; }
+      nav { padding: 16px 20px; }
+      nav .nav-links { gap: 16px; }
+      nav .nav-links a { font-size: 11px; }
+      .section { padding: 60px 20px; }
+      .project-grid { grid-template-columns: 1fr; gap: 16px; }
+      .brands-row { gap: 24px; }
+      .brand-logo { width: 40px; height: 40px; }
     }
   </style>
 </head>
 <body>
 
-  <div class="center">
-    <img
-      class="logo"
-      src="https://base44.app/api/apps/6a089110f76438ad64364898/files/mp/public/6a089110f76438ad64364898/1933d4d9b_ctrl3_v1.png"
-      alt="CTRL 3 Media Inc."
-    />
-    <div class="building">Building</div>
-    <div class="tagline">Content &nbsp;·&nbsp; Strategy &nbsp;·&nbsp; Community</div>
-  </div>
+  <nav>
+    <a href="/" class="nav-logo">CTRL<span>3</span></a>
+    <div class="nav-links">
+      <a href="#events">Events</a>
+      <a href="#shoots">Shoots</a>
+      <a href="#brands">Brands</a>
+      <a href="/portal.html" class="portal-badge"><span class="dot"></span>Portal</a>
+    </div>
+  </nav>
 
-  <div class="brands">
-    <a class="brand-link" href="https://www.instagram.com/recroom.ph?igsh=dmx3azlmcXBlcjBk" target="_blank" rel="noopener">
-      <img class="brand-logo"
-           src="https://base44.app/api/apps/6a089110f76438ad64364898/files/mp/public/6a089110f76438ad64364898/6c1bd6806_recroom_logo_white.png"
-           alt="Rec Room PH" />
-      <span class="brand-name">Rec Room</span>
-    </a>
-    <div class="brand-divider"></div>
-    <a class="brand-link" href="https://www.instagram.com/conmenph?igsh=eXh3aDBxenllZXZw" target="_blank" rel="noopener">
-      <img class="brand-logo"
-           src="https://base44.app/api/apps/6a089110f76438ad64364898/files/mp/public/6a089110f76438ad64364898/172b4e047_conmen_logo_final.png"
-           alt="ConMen" />
-      <span class="brand-name">ConMen</span>
-    </a>
-  </div>
+  <!-- HERO -->
+  <section class="hero">
+    <img class="hero-logo" src="https://base44.app/api/apps/6a089110f76438ad64364898/files/mp/public/6a089110f76438ad64364898/1933d4d9b_ctrl3_v1.png" alt="CTRL 3 Media Inc." />
+    <h1>Content. <span>Strategy.</span> Community.</h1>
+    <p>A creative media company producing events, content, and experiences that bring people together.</p>
+    <div class="scroll-hint">Scroll</div>
+  </section>
 
-  <a class="portal-link" href="/portal.html" target="_blank">
-    <span class="dot"></span>
-    Employee Portal
-  </a>
+  <!-- EVENTS -->
+  <section class="section" id="events">
+    <div class="section-header">
+      <span class="section-label">01</span>
+      <h2 class="section-title">Events</h2>
+      <div class="section-divider"></div>
+    </div>
+    <div class="project-grid">
+      <a class="project-card" href="events/xmen-97.html">
+        <img class="card-image" src="assets/events/xmen-97/xmen-97_01.jpg" alt="X-Men 97 Xavier Xpansion" loading="lazy" />
+        <div class="card-body">
+          <div class="card-category">Community Event</div>
+          <div class="card-title">X-Men '97: Xavier Xpansion</div>
+          <div class="card-desc">A pop culture celebration with 6 brand sponsors, live activations, and a raffle. Hosted by ConMen PH.</div>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="project-card" href="events/mtg-night.html">
+        <img class="card-image" src="assets/events/mtg-night/mtg_01.jpg" alt="MTG de Avance Creator Invitational" loading="lazy" />
+        <div class="card-body">
+          <div class="card-category">Creator Event</div>
+          <div class="card-title">MTG de Avance Creator Invitational</div>
+          <div class="card-desc">A Magic: The Gathering creator tournament bringing together content creators for a night of strategy and fun.</div>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="project-card" href="events/rec-opening-night.html">
+        <img class="card-image" src="assets/events/rec-opening/rec-opening_01.jpg" alt="Rec Room Opening Night" loading="lazy" />
+        <div class="card-body">
+          <div class="card-category">Launch Party</div>
+          <div class="card-title">The Rec Room Opening Night</div>
+          <div class="card-desc">The official launch of The Rec Room studio, a premier production space in Mandaluyong.</div>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="project-card" href="events/zwift.html">
+        <img class="card-image" src="assets/events/zwift/zwift_01.jpg" alt="Zwift Event" loading="lazy" />
+        <div class="card-body">
+          <div class="card-category">Event</div>
+          <div class="card-title">Zwift</div>
+          <div class="card-desc">An immersive indoor cycling experience event hosted at The Rec Room.</div>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- SHOOTS -->
+  <section class="section" id="shoots">
+    <div class="section-header">
+      <span class="section-label">02</span>
+      <h2 class="section-title">Shoots</h2>
+      <div class="section-divider"></div>
+    </div>
+    <div class="project-grid">
+      <a class="project-card" href="shoots/brother-bo.html">
+        <img class="card-image" src="assets/shoots/brother-bo/brother-bo_01.jpg" alt="Brother Bo Podcast" loading="lazy" />
+        <div class="card-body">
+          <div class="card-category">Podcast Recording</div>
+          <div class="card-title">Brother Bo Podcast</div>
+          <div class="card-desc">Podcast recording session at The Rec Room studio.</div>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+      <a class="project-card" href="shoots/pet-one.html">
+        <img class="card-image" src="assets/shoots/pet-one/pet-one_01.jpg" alt="Pet One Photoshoot" loading="lazy" />
+        <div class="card-body">
+          <div class="card-category">Commercial Shoot</div>
+          <div class="card-title">Pet One Photoshoot</div>
+          <div class="card-desc">A pet-inclusive commercial shoot across The Suite and Infinity Room at The Rec Room.</div>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- BRANDS -->
+  <section class="brands-section" id="brands">
+    <span class="section-label">Our Brands</span>
+    <div class="brands-row">
+      <a class="brand-link" href="https://www.instagram.com/recroom.ph" target="_blank" rel="noopener">
+        <img class="brand-logo" src="https://base44.app/api/apps/6a089110f76438ad64364898/files/mp/public/6a089110f76438ad64364898/6c1bd6806_recroom_logo_white.png" alt="Rec Room PH" />
+        <span class="brand-name">Rec Room</span>
+      </a>
+      <div class="brand-divider"></div>
+      <a class="brand-link" href="https://www.instagram.com/conmenph" target="_blank" rel="noopener">
+        <img class="brand-logo" src="https://base44.app/api/apps/6a089110f76438ad64364898/files/mp/public/6a089110f76438ad64364898/172b4e047_conmen_logo_final.png" alt="ConMen" />
+        <span class="brand-name">ConMen</span>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <p>CTRL 3 MEDIA INC. — 10th Floor, Rockwell Business Center, South Tower, Sheridan, Mandaluyong City</p>
+  </footer>
 
 </body>
 </html>
